@@ -18,6 +18,13 @@ public class ReservaService {
     }
 
     public String registrarReserva(Reserva reserva) {
+        if (reservaRepository.clienteTieneReservaActivaEnFechas(
+                reserva.getClienteId(),
+                reserva.getFechaEntrada(),
+                reserva.getFechaSalida())) {
+            return MSG_CLIENTE_CON_RESERVA;
+        }
+
         return "";
     }
 }
