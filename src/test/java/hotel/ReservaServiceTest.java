@@ -56,4 +56,36 @@ public class ReservaServiceTest {
 
         verifyNoInteractions(disponibilidadService, alternativaService);
     }
+    @Test
+    void debeSugerirAlternativasSiNoHayDisponibilidadPorTipo() {
+        Reserva request = new Reserva(
+                "HR5678",
+                "CLI002",
+                LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 5),
+                "SUITE"
+        );
+
+        when(reservaRepository.clienteTieneReservaActivaEnFechas(
+                "CLI002",
+                LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 5)
+        )).thenReturn(false);
+
+        when(disponibilidadService.hayDisponibilidad(
+                "SUITE",
+                LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 5)
+        )).thenReturn(false);
+
+        when(alternativaService.sugerirAlternativas(
+                "SUITE",
+                LocalDate.of(2026, 5, 1),
+                LocalDate.of(2026, 5, 5)
+        )).thenReturn(java.util.List.of("DOBLE", "MATRIMONIAL"));
+
+        String resultado = reservaService.registrarReserva(request);
+
+        assertEquals("No hay disponibilidad. Alternativas: DOBLE, MATRIMONIAL", resultado);
+    }
 }
